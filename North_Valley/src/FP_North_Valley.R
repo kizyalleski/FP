@@ -48,13 +48,47 @@ collinears <-
 collinears
 
 # 3) LDA
-# boxPlot(df, columns = 1:6, ncol = 3)
-# correlationPlot(df, columns = 1:7, mixtures = TRUE)
+boxPlot(df, columns = 1:6, ncol = 3)
+correlationPlot(df, columns = 1:7, mixtures = TRUE)
 
-df_lda <- 
+df_lda <-
+  df %>% 
+  select(!any_of(collinears)) # создаем дф без коллинеарных элементов
 
+df_lda %>% 
+  LDAPlot(text = T)
 
-  
+# 4) ВЫБОР ТРАССЕРОВ
+df_lda %>% 
+  rangeTest() %>% 
+  KWTest(pvalue = 0.25)
 
+DFATest(df_lda, niveau = 0.25)
+
+# 5) БОКСПЛОТЫ
+df %>% 
+  select(id, Source, plagioklaz, kps) %>% 
+  gather(elem, cons, -id, -Source) %>% 
+  ggplot(aes(x = Source,
+             y = cons,
+             color = Source)) +
+  geom_boxplot() +
+  geom_text(aes(label = id)) +
+  facet_wrap(~elem,
+             scales = "free_y")
+
+# 6) ПОДТВЕРЖДЕНИЕ ТРАССЕРОВ
+df_lda %>% 
+  select(id, Source, plagioklaz, kps) %>% 
+  LDAPlot(text = T)
+
+# 7) Размешивание
+results <- 
+  df_lda %>% 
+  select(id, Source, plagioklaz, kps) %>% 
+  unmix(samples = 100, iter = 1000)
+
+results %>% 
+  plotResults()
 
 
