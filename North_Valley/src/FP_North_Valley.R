@@ -34,6 +34,24 @@ df <-
   select(!all_of(mix_na)) %>%  # оставляем только те элементы, которые есть в целевом образце
   mutate_all(~replace(., is.na(.), 0)) # заменяем na на 0
 
+# 2) ПРОВЕРКА НА КОЛЛИНЕАРНОСТЬ
+collinears <-
+  df %>% 
+  select(-id, -Source) %>% 
+  correlate(method = "spearman") %>% 
+  rearrange() %>% 
+  shave() %>% 
+  mutate_if(is.numeric, ~abs(.)) %>% 
+  filter_if(is.numeric, any_vars(. > 0.85)) %>% 
+  pull(term)
+
+collinears
+
+# 3) LDA
+# boxPlot(df, columns = 1:6, ncol = 3)
+# correlationPlot(df, columns = 1:7, mixtures = TRUE)
+
+df_lda <- 
 
 
   
