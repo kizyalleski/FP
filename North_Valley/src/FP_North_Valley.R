@@ -19,7 +19,10 @@ df_north <-
   mutate_at(vars(-Source), ~ as.numeric(.)) %>% # преобразуем в числовой тип
   na_if(0) %>% # заменяем нули на na
   as.data.frame() %>% # преобразуем к типу дата фрейм из тибла
-  filter(id != 3000)
+  filter(id != 3001) %>% 
+  filter(id != c(2010, 2015)) %>% 
+  filter(id != c(2005, 2006, 2007)) %>% 
+  filter(id != c(2011, 2013, 2014, 2016))
   
 # список элементов, которых нет в мишени
 mix_na <-
@@ -56,8 +59,7 @@ collinears
 
 df_lda <-
   df %>% 
-  select(!any_of(collinears)) # создаем дф без коллинеарных элементов
-  # filter(Source != "Moraine")
+  select(!any_of(collinears))   # создаем дф без коллинеарных элементов
   
 df_lda %>% 
   LDAPlot(text = T)
@@ -65,13 +67,13 @@ df_lda %>%
 # 4) ВЫБОР ТРАССЕРОВ
 df_lda %>% 
   rangeTest() %>% 
-  KWTest(pvalue = 0.2)
+  KWTest(pvalue = 0.3)
 
-DFATest(df_lda, niveau = 0.2)
+DFATest(df_lda, niveau = 0.3)
 
 # 5) БОКСПЛОТЫ
 df %>% 
-  select(id, Source, kvarc, plagioklaz) %>% 
+  select(id, Source, plagioklaz, hlorit, Ca, Zn, sluda) %>% #Ca, Zn, sluda) %>% 
   gather(elem, cons, -id, -Source) %>% 
   ggplot(aes(x = Source,
              y = cons,
@@ -83,13 +85,13 @@ df %>%
 
 # 6) ПОДТВЕРЖДЕНИЕ ТРАССЕРОВ
 df_lda %>% 
-  select(id, Source, kvarc, plagioklaz) %>% 
+  select(id, Source, plagioklaz, hlorit) %>%   #Ca, Zn, sluda) %>% 
   LDAPlot(text = T)
 
 # 7) Размешивание
 results <- 
   df_lda %>% 
-  select(id, Source, kvarc, plagioklaz) %>% 
+  select(id, Source, plagioklaz, hlorit) %>% 
   unmix(samples = 100, iter = 1000)
 
 results %>% 
