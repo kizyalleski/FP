@@ -18,8 +18,9 @@ df_north <-
   rename(id = Name) %>% # переименовываем name в id
   mutate_at(vars(-Source), ~ as.numeric(.)) %>% # преобразуем в числовой тип
   na_if(0) %>% # заменяем нули на na
-  as.data.frame() # преобразуем к типу дата фрейм из тибла
-
+  as.data.frame() %>% # преобразуем к типу дата фрейм из тибла
+  filter(id != 3000)
+  
 # список элементов, которых нет в мишени
 mix_na <-
   df_north %>% 
@@ -33,7 +34,9 @@ df <-
   df_north %>% 
   select(!all_of(mix_na)) %>%  # оставляем только те элементы, которые есть в целевом образце
   mutate_all(~replace(., is.na(.), 0)) # заменяем na на 0
-
+  # filter(Source != "Moraine") %>% 
+  
+  
 # 2) ПРОВЕРКА НА КОЛЛИНЕАРНОСТЬ
 collinears <-
   df %>% 
@@ -48,26 +51,27 @@ collinears <-
 collinears
 
 # 3) LDA
-boxPlot(df, columns = 1:6, ncol = 3)
-correlationPlot(df, columns = 1:7, mixtures = TRUE)
+# boxPlot(df, columns = 1:6, ncol = 3)
+# correlationPlot(df, columns = 1:7, mixtures = TRUE)
 
 df_lda <-
   df %>% 
   select(!any_of(collinears)) # создаем дф без коллинеарных элементов
-
+  # filter(Source != "Moraine")
+  
 df_lda %>% 
   LDAPlot(text = T)
 
 # 4) ВЫБОР ТРАССЕРОВ
 df_lda %>% 
   rangeTest() %>% 
-  KWTest(pvalue = 0.25)
+  KWTest(pvalue = 0.2)
 
-DFATest(df_lda, niveau = 0.25)
+DFATest(df_lda, niveau = 0.2)
 
 # 5) БОКСПЛОТЫ
 df %>% 
-  select(id, Source, plagioklaz, kps) %>% 
+  select(id, Source, kvarc, plagioklaz) %>% 
   gather(elem, cons, -id, -Source) %>% 
   ggplot(aes(x = Source,
              y = cons,
@@ -79,13 +83,13 @@ df %>%
 
 # 6) ПОДТВЕРЖДЕНИЕ ТРАССЕРОВ
 df_lda %>% 
-  select(id, Source, plagioklaz, kps) %>% 
+  select(id, Source, kvarc, plagioklaz) %>% 
   LDAPlot(text = T)
 
 # 7) Размешивание
 results <- 
   df_lda %>% 
-  select(id, Source, plagioklaz, kps) %>% 
+  select(id, Source, kvarc, plagioklaz) %>% 
   unmix(samples = 100, iter = 1000)
 
 results %>% 
