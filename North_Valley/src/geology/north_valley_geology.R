@@ -1,4 +1,4 @@
-setwd("C:/FP/North_Valley/src")
+setwd("C:/FP/North_Valley/src/geology")
 
 library(tidyverse)
 library(dplyr)
@@ -6,27 +6,20 @@ library(fingerPro)
 library(readxl)
 library(corrr)
 
-# Пример исходных данных
-data <- catchment
-
 # 1) ЧТЕНИЕ и подготовка ДАННЫХ
 
-df_north <-
-  read_excel(path = "../data/North_Valley_data.xlsx") %>% # чтение данных
+df_north_geology <-
+  read_excel(path = "../../data/geology.xlsx") %>% # чтение данных
   filter(Name != "Размерность") %>% # убираем строку с размерностью
   select(-X, -Y) %>% # убираем столбцы с координатами
   rename(id = Name) %>% # переименовываем name в id
   mutate_at(vars(-Source), ~ as.numeric(.)) %>% # преобразуем в числовой тип
   na_if(0) %>% # заменяем нули на na
-  as.data.frame() %>% # преобразуем к типу дата фрейм из тибла
-  filter(id != 3001) %>% 
-  filter(id != c(2010, 2015)) %>% 
-  filter(id != c(2005, 2006, 2007)) %>% 
-  filter(id != c(2011, 2013, 2014, 2016))
-  
+  as.data.frame() # преобразуем к типу дата фрейм из тибла
+
 # список элементов, которых нет в мишени
 mix_na <-
-  df_north %>% 
+  df_north_geology %>% 
   filter(Source == "Mix") %>% # оставляем только строку целевого образца
   select_if(is.na) %>% # выбираем столбцы с na
   gather(var, val) %>% # переменную и значение ориентируем вертикально
@@ -34,12 +27,10 @@ mix_na <-
 
 # получение итогового набора данных
 df <-
-  df_north %>% 
+  df_north_geology %>% 
   select(!all_of(mix_na)) %>%  # оставляем только те элементы, которые есть в целевом образце
   mutate_all(~replace(., is.na(.), 0)) # заменяем na на 0
-  # filter(Source != "Moraine") %>% 
-  
-  
+
 # 2) ПРОВЕРКА НА КОЛЛИНЕАРНОСТЬ
 collinears <-
   df %>% 
@@ -60,7 +51,7 @@ collinears
 df_lda <-
   df %>% 
   select(!any_of(collinears))   # создаем дф без коллинеарных элементов
-  
+
 df_lda %>% 
   LDAPlot(text = T)
 
