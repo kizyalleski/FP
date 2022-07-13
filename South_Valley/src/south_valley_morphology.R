@@ -9,7 +9,7 @@ library(corrr)
 # 1) ЧТЕНИЕ и подготовка ДАННЫХ
 
 df_south_morphology <-
-  read_excel(path = "../data/south_valley_morphology_data.xlsx") %>% # чтение данных
+  read_excel(path = "../data/morph_2.xlsx") %>% # чтение данных
   filter(Name != "Размерность") %>% # убираем строку с размерностью
   select(-X, -Y) %>% # убираем столбцы с координатами
   rename(id = Name) %>% # переименовываем name в id
@@ -51,17 +51,19 @@ collinears
 
 df_lda <-
   df %>% 
-  select(!any_of(collinears))   # создаем дф без коллинеарных элементов
+  select(!any_of(collinears)) # создаем дф без коллинеарных элементов
 
+#df_lda <- df_lda %>% filter(id != 26) %>% filter(id != 16) %>% filter(id != 1)
+  
 df_lda %>% 
   LDAPlot(text = T)
 
 # 4) ВЫБОР ТРАССЕРОВ
 df_lda %>% 
   rangeTest() %>% 
-  KWTest(pvalue = 0.05)
+  KWTest(pvalue = 0.1)
 
-DFATest(df_lda, niveau = 0.05)
+DFATest(df_lda, niveau = 0.1)
 
 # 5) БОКСПЛОТЫ
 df %>% 
@@ -77,13 +79,13 @@ df %>%
 
 # 6) ПОДТВЕРЖДЕНИЕ ТРАССЕРОВ
 df_lda %>% 
-  select(id, Source, plagioklaz, hlorit) %>%   #Ca, Zn, sluda) %>% 
+  select(id, Source, K, sluda) %>%
   LDAPlot(text = T)
 
 # 7) Размешивание
 results <- 
   df_lda %>% 
-  select(id, Source, plagioklaz, hlorit) %>% 
+  select(id, Source, K, sluda) %>% 
   unmix(samples = 100, iter = 1000)
 
 results %>% 
