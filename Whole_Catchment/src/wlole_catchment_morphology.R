@@ -12,7 +12,7 @@ data <- catchment
 # 1) ЧТЕНИЕ и подготовка ДАННЫХ
 
 df_whole <-
-  read_excel(path = "../data/morph_data_2.xlsx") %>% # чтение данных
+  read_excel(path = "../data/morph_data_3.xlsx") %>% # чтение данных
   filter(Name != "Размерность") %>% # убираем строку с размерностью
   select(-X, -Y) %>% # убираем столбцы с координатами
   rename(id = Name) %>% # переименовываем name в id
@@ -55,25 +55,25 @@ df_lda <-
   df %>% 
   select(!any_of(collinears)) # создаем дф без коллинеарных элементов
 
-df_lda <- 
-  df_lda %>% 
-  filter(id != 27) %>% 
-  filter(id != 2005) %>%
-  filter(id != 2015) %>%
-  filter(id != 2021) %>% 
-  filter(id != 20) %>% 
-  filter(id != 28) %>% 
-  filter(id != 2019) %>% 
-  filter(id != 2020) %>% 
-  filter(id != 21) %>% 
-  filter(id != 2004) %>% 
-  filter(id != 2011) %>% 
-  filter(id != 3) %>%
-  filter(id != 6) %>%
-  filter(id != 3003) %>%
-  filter(id != 3004) %>% 
-  filter(id != 17) %>% 
-  filter(id != 24)
+# df_lda <- 
+#   df_lda %>% 
+#   filter(id != 27) %>% 
+#   filter(id != 2005) %>%
+#   filter(id != 2015) %>%
+#   filter(id != 2021) %>% 
+#   filter(id != 20) %>% 
+#   filter(id != 28) %>% 
+#   filter(id != 2019) %>% 
+#   filter(id != 2020) %>% 
+#   filter(id != 21) %>% 
+#   filter(id != 2004) %>% 
+#   filter(id != 2011) %>% 
+#   filter(id != 3) %>%
+#   filter(id != 6) %>%
+#   filter(id != 3003) %>%
+#   filter(id != 3004) %>% 
+#   filter(id != 17) %>% 
+#   filter(id != 24)
 
 df_lda %>% 
   LDAPlot(text = T)
