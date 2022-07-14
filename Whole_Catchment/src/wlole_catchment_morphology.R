@@ -63,7 +63,17 @@ df_lda <-
   filter(id != 2019) %>% 
   filter(id != 20) %>% 
   filter(id != 28) %>%
-  
+  filter(id != 2021) %>%
+  filter(id != 2020) %>%
+  filter(id != 6) %>%
+  filter(id != 17) %>%
+  filter(id != 3004) %>%
+  filter(id != 3003) %>%
+  filter(id != 9) %>%
+  filter(id != 24) %>%
+  filter(id != 4) %>%
+  filter(id != 23) %>%
+  filter(id != 21)
 
 df_lda %>% 
   LDAPlot(text = T)
@@ -98,5 +108,5 @@ results <-
   select(id, Source, Al, Zn, smektit, kps, plagioklaz) %>% 
   unmix(samples = 200, iter = 300)
 
-results %>% 
+ results %>% 
   plotResults()
