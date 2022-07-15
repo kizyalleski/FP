@@ -12,14 +12,16 @@ data <- catchment
 # 1) ЧТЕНИЕ и подготовка ДАННЫХ
 
 df_whole <-
-  read_excel(path = "../../data/morph_data_3s_mix-2024.xlsx") %>% # чтение данных
+  read_excel(path = "../../data/data.xlsx") %>% # чтение данных
   filter(Name != "Размерность") %>% # убираем строку с размерностью
   select(-X, -Y) %>% # убираем столбцы с координатами
   rename(id = Name) %>% # переименовываем name в id
   mutate_at(vars(-Source), ~ as.numeric(.)) %>% # преобразуем в числовой тип
   na_if(0) %>% # заменяем нули на na
-  as.data.frame() # преобразуем к типу дата фрейм из тибла
-
+  as.data.frame() %>%  # преобразуем к типу дата фрейм из тибла
+  filter(id != 2024) %>% 
+  filter(id != 2023)
+  
 # список элементов, которых нет в мишени
 mix_na <-
   df_whole %>% 
@@ -57,25 +59,22 @@ df_lda <-
 
 df_lda <-
   df_lda %>%
-  filter(id != 2005) %>%
-  filter(id != 2015) %>%
+  filter(id != 2001) %>%
+  filter(id != 20) %>%
   filter(id != 27) %>%
   filter(id != 2021) %>%
-  filter(id != 2019) %>%
-  filter(id != 15) %>%
-  filter(id != 20) %>% 
-  filter(id != 28) %>% 
+  filter(id != 2005) %>%
+  filter(id != 2015) %>%
+  filter(id != 3004) %>%
+  filter(id != 24) %>% 
+  filter(id != 2007) %>%
+  filter(id != 28) %>%
   filter(id != 2020) %>%
-  filter(id != 2003) %>%
-  filter(id != 2029) %>%
-  filter(id != 6) %>%
-  filter(id != 17) %>% 
-  filter(id != 3003) %>% 
-  filter(id != 3004) %>% 
-  filter(id != 21) %>% 
-  filter(id != 24)
+  filter(id != 2019) %>% 
+  filter(id != 3003) %>%
+  filter(id != 2028) %>%
+  filter(id != 2029)
   
-
 df_lda %>% 
   LDAPlot(text = T)
 
@@ -88,7 +87,7 @@ DFATest(df_lda, niveau = 0.05)
 
 # 5) БОКСПЛОТЫ
 df %>% 
-  select(id, Source, Al, Mn, Zn, smektit, kps, plagioklaz) %>% 
+  select(id, Source, Al, Zn, kps, plagioklaz) %>% 
   gather(elem, cons, -id, -Source) %>% 
   ggplot(aes(x = Source,
              y = cons,
@@ -100,13 +99,13 @@ df %>%
 
 # 6) ПОДТВЕРЖДЕНИЕ ТРАССЕРОВ
 df_lda %>% 
-  select(id, Source, Al, Mn, Zn, smektit, kps, plagioklaz) %>% 
+  select(id, Source, Al, Zn, kps, plagioklaz) %>% 
   LDAPlot(text = T)
 
 # 7) Размешивание
 results <- 
   df_lda %>% 
-  select(id, Source, Al, Mn, Zn, smektit, kps, plagioklaz) %>% 
+  select(id, Source, Al, Zn, kps, plagioklaz) %>% 
   unmix(samples = 200, iter = 300)
 
 results %>% 
