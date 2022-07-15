@@ -1,0 +1,2 @@
+  id   GOF.mean     GOF.SD Moraine.mean Moraine.SD Right.mean  Right.SD  Left.mean    Left.SD
+1 19 0.90915083 0.07000507    1.0075086  0.2195045  0.1003603 0.1853390 -0.1078689  0.1775404
