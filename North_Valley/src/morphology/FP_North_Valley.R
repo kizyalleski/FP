@@ -12,17 +12,14 @@ data <- catchment
 # 1) ЧТЕНИЕ и подготовка ДАННЫХ
 
 df_north_morphology <-
-  read_excel(path = "../../data/North_Valley_data.xlsx") %>% # чтение данных
+  read_excel(path = "../../data/all_data.xlsx") %>% # чтение данных
   filter(Name != "Размерность") %>% # убираем строку с размерностью
   select(-X, -Y) %>% # убираем столбцы с координатами
   rename(id = Name) %>% # переименовываем name в id
   mutate_at(vars(-Source), ~ as.numeric(.)) %>% # преобразуем в числовой тип
   na_if(0) %>% # заменяем нули на na
   as.data.frame() %>% # преобразуем к типу дата фрейм из тибла
-  filter(id != 3001) %>% 
-  filter(id != c(2010, 2015)) %>% 
-  filter(id != c(2005, 2006, 2007)) %>% 
-  filter(id != c(2011, 2013, 2014, 2016))
+  filter(id != 3001)
   
 # список элементов, которых нет в мишени
 mix_na <-
@@ -73,7 +70,7 @@ DFATest(df_lda, niveau = 0.3)
 
 # 5) БОКСПЛОТЫ
 df %>% 
-  select(id, Source, plagioklaz, hlorit, Ca, Zn, sluda) %>% #Ca, Zn, sluda) %>% 
+  select(id, Source, plagioklaz,  sluda, hlorit) %>% #Ca, Zn, sluda) %>% 
   gather(elem, cons, -id, -Source) %>% 
   ggplot(aes(x = Source,
              y = cons,
@@ -85,13 +82,13 @@ df %>%
 
 # 6) ПОДТВЕРЖДЕНИЕ ТРАССЕРОВ
 df_lda %>% 
-  select(id, Source, plagioklaz, hlorit) %>%   #Ca, Zn, sluda) %>% 
+  select(id, Source, plagioklaz, sluda, hlorit) %>%   #Ca, Zn, sluda) %>% 
   LDAPlot(text = T)
 
 # 7) Размешивание
 results <- 
   df_lda %>% 
-  select(id, Source, plagioklaz, hlorit) %>% 
+  select(id, Source, plagioklaz, sluda, hlorit) %>% 
   unmix(samples = 100, iter = 1000)
 
 results %>% 

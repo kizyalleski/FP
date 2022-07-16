@@ -9,7 +9,7 @@ library(corrr)
 # 1) ЧТЕНИЕ и подготовка ДАННЫХ
 
 df_south_morphology <-
-  read_excel(path = "../data/morph_2.xlsx") %>% # чтение данных
+  read_excel(path = "../data/south_valley_morphology_data.xlsx") %>% # чтение данных
   filter(Name != "Размерность") %>% # убираем строку с размерностью
   select(-X, -Y) %>% # убираем столбцы с координатами
   rename(id = Name) %>% # переименовываем name в id
